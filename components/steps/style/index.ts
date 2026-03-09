@@ -176,6 +176,37 @@ const genBasicStyle: GenerateStyle<StepsToken, CSSObject> = (token) => {
         [`${itemCls}-title, ${itemCls}-subtitle, ${itemCls}-content`]: textEllipsis,
       },
 
+      // =========================== Scroll ==========================
+      [`&${componentCls}-scroll`]: {
+        overflowX: 'auto',
+        overflowY: 'hidden',
+
+        [`&${componentCls}-horizontal:not(${componentCls}-navigation):not(${componentCls}-inline):not(${componentCls}-panel)`]:
+          {
+            [`> ${itemCls}`]: {
+              flex: 'none',
+              minWidth: varRef('scroll-x', 'max-content'),
+            },
+
+            [`${itemCls}-title, ${itemCls}-subtitle, ${itemCls}-content`]: {
+              whiteSpace: 'nowrap',
+            },
+
+            [`${itemCls}-rail`]: {
+              minWidth: token.controlHeight,
+            },
+          },
+      },
+
+      [`&${componentCls}-scroll${componentCls}-scroll-wrap`]: {
+        [`&${componentCls}-horizontal:not(${componentCls}-navigation):not(${componentCls}-inline):not(${componentCls}-panel)`]:
+          {
+            [`${itemCls}-title, ${itemCls}-subtitle, ${itemCls}-content`]: {
+              whiteSpace: 'normal',
+            },
+          },
+      },
+
       // ========================= Clickable ==========================
       [`${itemCls}[role='button']:not(${itemCls}-active):hover`]: {
         cursor: 'pointer',

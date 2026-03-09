@@ -184,4 +184,46 @@ describe('Steps', () => {
       },
     });
   });
+
+  it('supports horizontal scroll', () => {
+    const { container } = render(
+      <Steps
+        scroll={{ x: 'max-content' }}
+        items={[
+          { title: 'Step 1', content: 'Long long long content to verify scroll mode behavior' },
+          { title: 'Step 2', content: 'Long long long content to verify scroll mode behavior' },
+          { title: 'Step 3', content: 'Long long long content to verify scroll mode behavior' },
+        ]}
+      />,
+    );
+
+    const stepsNode = container.querySelector<HTMLElement>('.ant-steps');
+
+    expect(stepsNode).toHaveClass('ant-steps-scroll');
+    expect(stepsNode).not.toHaveClass('ant-steps-scroll-wrap');
+    expect(stepsNode).toHaveStyle({
+      '--ant-cmp-steps-scroll-x': 'max-content',
+    });
+  });
+
+  it('supports scroll wrap', () => {
+    const { container } = render(
+      <Steps
+        scroll={{ x: 240, wrap: true }}
+        items={[
+          { title: 'Step 1', content: 'Long long long content to verify scroll mode behavior' },
+          { title: 'Step 2', content: 'Long long long content to verify scroll mode behavior' },
+          { title: 'Step 3', content: 'Long long long content to verify scroll mode behavior' },
+        ]}
+      />,
+    );
+
+    const stepsNode = container.querySelector<HTMLElement>('.ant-steps');
+
+    expect(stepsNode).toHaveClass('ant-steps-scroll');
+    expect(stepsNode).toHaveClass('ant-steps-scroll-wrap');
+    expect(stepsNode).toHaveStyle({
+      '--ant-cmp-steps-scroll-x': '240px',
+    });
+  });
 });

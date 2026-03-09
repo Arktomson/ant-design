@@ -112,6 +112,10 @@ export interface BaseStepsProps {
   /** @deprecated Please use `type` and `iconRender` instead. */
   progressDot?: boolean | ProgressDotRender;
   responsive?: boolean;
+  scroll?: {
+    x?: React.CSSProperties['width'];
+    wrap?: boolean;
+  };
   ellipsis?: boolean;
   /**
    * Set offset cell, only work when `type` is `inline`.
@@ -157,6 +161,7 @@ const Steps = (props: StepsProps) => {
     direction,
     orientation,
     responsive = true,
+    scroll,
     progressDot,
     labelPlacement,
     titlePlacement,
@@ -248,8 +253,10 @@ const Steps = (props: StepsProps) => {
       return 'horizontal';
     }
 
-    return (responsive && xs) || nextOrientation === 'vertical' ? 'vertical' : 'horizontal';
-  }, [orientation, direction, mergedType, responsive, xs]);
+    return (responsive && !scroll && xs) || nextOrientation === 'vertical'
+      ? 'vertical'
+      : 'horizontal';
+  }, [orientation, direction, mergedType, responsive, scroll, xs]);
 
   const mergedTitlePlacement = React.useMemo<StepsProps['titlePlacement']>(() => {
     if (isDot || mergedOrientation === 'vertical') {
@@ -264,6 +271,24 @@ const Steps = (props: StepsProps) => {
 
   // ========================== Percentage ==========================
   const mergedPercent = isInline ? undefined : percent;
+  const enableScroll =
+    !!scroll &&
+    mergedOrientation === 'horizontal' &&
+    mergedType !== 'navigation' &&
+    mergedType !== 'panel' &&
+    !isInline;
+  const enableScrollWrap = !!scroll?.wrap && enableScroll;
+  const scrollX = React.useMemo(() => {
+    if (!enableScroll || !scroll) {
+      return null;
+    }
+
+    if (typeof scroll.x === 'number') {
+      return `${scroll.x}px`;
+    }
+
+    return scroll.x || 'max-content';
+  }, [enableScroll, scroll]);
 
   // =========== Merged Props for Semantic ===========
   const mergedProps: StepsProps = {
@@ -276,6 +301,7 @@ const Steps = (props: StepsProps) => {
     current,
     percent: mergedPercent,
     responsive,
+    scroll: enableScroll ? scroll : undefined,
     offset,
   };
 
@@ -389,6 +415,7 @@ const Steps = (props: StepsProps) => {
   // ============================ Styles ============================
   const mergedStyle: React.CSSProperties = {
     [varName('items-offset')]: `${offset}`,
+    ...(scrollX ? { [varName('scroll-x')]: scrollX } : null),
     ...contextStyle,
     ...style,
   };
@@ -401,6 +428,8 @@ const Steps = (props: StepsProps) => {
       [`${prefixCls}-rtl`]: rtlDirection === 'rtl',
       [`${prefixCls}-dot`]: isDot,
       [`${prefixCls}-ellipsis`]: ellipsis,
+      [`${prefixCls}-scroll`]: enableScroll,
+      [`${prefixCls}-scroll-wrap`]: enableScrollWrap,
       [`${prefixCls}-with-progress`]: mergedPercent !== undefined,
       [`${prefixCls}-small`]: mergedSize === 'small',
     },
